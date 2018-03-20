@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">SpendCar</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- Activities Name -->
+    <string name="title_activity_main">Рабочий стол</string>
+    <string name="title_activity_add_car">Новая машина</string>
+
+    <!-- AddCarActivity -->
+    <string name="etNameCar">Название машины (какое Вам больше нравится)</string>
+    <string name="etMark">Марка машины</string>
+    <string name="etYearCreate">Год выпуска</string>
+    <string name="etModel">Модель машины</string>
+    <string name="etOdometr">Пробег, всего</string>
+    <string name="etEatFuel">Расход топлива, заявленный производителем</string>
 </resources>
