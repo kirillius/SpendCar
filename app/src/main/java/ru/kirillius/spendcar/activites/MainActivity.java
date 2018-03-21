@@ -32,5 +32,6 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this, AddCarActivity.class));
 
         CommonHelper.setStatusBarColor(this);
+        //startService(new Intent(this, InitAllData.class));
     }
 }
