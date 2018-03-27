@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
  */
 
 public class Marks {
-    private String name;
+    private String name, tableName = "marks";
     private int _id;
     private static String queryCreate="CREATE TABLE marks ( _id INTEGER PRIMARY KEY, name TEXT NULL)",
             queryDrop="DROP TABLE IF EXISTS marks";
@@ -18,6 +18,10 @@ public class Marks {
 
     public static void dropTable(SQLiteDatabase db) {
         db.execSQL(queryDrop);
+    }
+
+    public String getTableName() {
+        return tableName;
     }
 
     public String getName() {

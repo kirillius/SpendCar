@@ -1,4 +1,4 @@
-package ru.kirillius.spendcar.database;
+package ru.kirillius.spendcar.database.orm;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -9,6 +9,8 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import ru.kirillius.spendcar.database.DBHelper;
 
 /**
  * Created by Lavrentev on 26.10.2017.
@@ -28,7 +30,6 @@ public class BasicFunctionDB {
         ContentValues cv = new ContentValues();
 
         for (Map.Entry<String,Object> entry : values.entrySet()) {
-            System.out.println("key: "+entry.getKey());
             if(!entry.getKey().equals("tableName") & !entry.getKey().equals("_id"))
                 cv.put(entry.getKey(), entry.getValue().toString());
         }
@@ -75,6 +76,40 @@ public class BasicFunctionDB {
     public ArrayList<HashMap<String, String>> get(String tableName) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = db.query(tableName, null, null, null, null, null, "_id DESC");
+        ArrayList<HashMap<String, String>> data = new ArrayList<HashMap<String, String>>();
+        while (cursor.moveToNext()) {
+            HashMap<String, String> currentRow = new HashMap<>();
+            for (String column : cursor.getColumnNames()) {
+                currentRow.put(column, cursor.getString(cursor.getColumnIndex(column)));
+            }
+
+            if(currentRow.size()>0)
+                data.add(currentRow);
+        }
+
+        db.close();
+        return data;
+    }
+
+    public HashMap<String, String> get(String tableName, String selection, String[] selectionArgs) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Cursor cursor = db.query(tableName, null, selection, selectionArgs, null, null, "_id DESC");
+
+        HashMap<String, String> data = new HashMap<String, String>();
+        while (cursor.moveToNext()) {
+            for (String column : cursor.getColumnNames()) {
+                data.put(column, cursor.getString(cursor.getColumnIndex(column)));
+            }
+        }
+
+        db.close();
+        return data;
+    }
+
+    public ArrayList<HashMap<String, String>> findList(String tableName, String selection, String[] selectionArgs) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Cursor cursor = db.query(tableName, null, selection, selectionArgs, null, null, null);
+
         ArrayList<HashMap<String, String>> data = new ArrayList<HashMap<String, String>>();
         while (cursor.moveToNext()) {
             HashMap<String, String> currentRow = new HashMap<>();

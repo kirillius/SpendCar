@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import ru.kirillius.spendcar.database.BasicFunctionDB;
+import ru.kirillius.spendcar.database.orm.BasicFunctionDB;
 import ru.kirillius.spendcar.database.models.Parameters;
 
 /**

@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
  */
 
 public class ParametersCar {
+    private String tableName="parametersCar";
     private int carId, parameterId;
     private float timeLimitReplacement;
     private static String queryCreate="CREATE TABLE parametersCar (carId INTEGER NOT NULL, parameterId INTEGER NOT NULL, " +
@@ -20,6 +21,10 @@ public class ParametersCar {
 
     public static void dropTable(SQLiteDatabase db) {
         db.execSQL(queryDrop);
+    }
+
+    public String getTableName() {
+        return tableName;
     }
 
     public int getCarId() {

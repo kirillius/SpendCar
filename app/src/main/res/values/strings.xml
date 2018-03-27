@@ -14,4 +14,5 @@
     <string name="etModel">Модель машины</string>
     <string name="etOdometr">Пробег, всего</string>
     <string name="etEatFuel">Расход топлива, заявленный производителем</string>
+    <string name="tvParameters">Показатели авто, которые нужно учитывать (потом можно будет изменить)</string>
 </resources>

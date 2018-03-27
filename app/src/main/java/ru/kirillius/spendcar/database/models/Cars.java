@@ -2,15 +2,20 @@ package ru.kirillius.spendcar.database.models;
 
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.ArrayList;
+
 /**
  * Created by Lavrentev on 21.03.2018.
  * Класс для реализации в БД сущности "Машина"
  */
 
 public class Cars {
-    private String name;
+    private String name, tableName = "cars";
     private int yearCreate, markId, modelId, _id;
     private float odometr, eatFuel;
+    private ArrayList<Parameters> parametersCar;
+    private Marks markCar;
+    private Models modelCar;
     private static String queryCreate="CREATE TABLE cars ( _id INTEGER PRIMARY KEY, name TEXT NULL, " +
             "markId INTEGER NULL, modelId INTEGER NULL, yearCreate INTEGER NULL, odometr FLOAT NULL, " +
             "eatFuel FLOAT NULL, FOREIGN KEY (markId) REFERENCES marks(_id), FOREIGN KEY (modelId) REFERENCES models(_id))",
@@ -23,6 +28,10 @@ public class Cars {
 
     public static void dropTable(SQLiteDatabase db) {
         db.execSQL(queryDrop);
+    }
+
+    public String getTableName() {
+        return tableName;
     }
 
     public int get_id() {
@@ -79,5 +88,29 @@ public class Cars {
 
     public void setEatFuel(float eatFuel) {
         this.eatFuel = eatFuel;
+    }
+
+    public ArrayList<Parameters> getParametersCar() {
+        return parametersCar;
+    }
+
+    public void setParametersCar(ArrayList<Parameters> parametersCar) {
+        this.parametersCar = parametersCar;
+    }
+
+    public Marks getMarkCar() {
+        return markCar;
+    }
+
+    public void setMarkCar(Marks markCar) {
+        this.markCar = markCar;
+    }
+
+    public Models getModelCar() {
+        return modelCar;
+    }
+
+    public void setModelCar(Models modelCar) {
+        this.modelCar = modelCar;
     }
 }
