@@ -15,4 +15,8 @@
     <string name="etOdometr">Пробег, всего</string>
     <string name="etEatFuel">Расход топлива, заявленный производителем</string>
     <string name="tvParameters">Показатели авто, которые нужно учитывать (потом можно будет изменить)</string>
+
+    <!-- DialogConfirm -->
+    <string name="btnYesAnswer">Да</string>
+    <string name="btnNoAnswer">Нет</string>
 </resources>

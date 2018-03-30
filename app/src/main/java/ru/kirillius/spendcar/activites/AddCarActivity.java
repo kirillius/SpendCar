@@ -1,8 +1,16 @@
 package ru.kirillius.spendcar.activites;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -10,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -28,9 +37,11 @@ import ru.kirillius.spendcar.database.orm.MarksController;
 import ru.kirillius.spendcar.database.orm.ModelsController;
 import ru.kirillius.spendcar.database.orm.ParametersCarController;
 import ru.kirillius.spendcar.database.orm.ParametersController;
+import ru.kirillius.spendcar.interfaces.OnSelectItem;
 import ru.kirillius.spendcar.services.CommonHelper;
+import ru.kirillius.spendcar.services.DialogsHelper;
 
-public class AddCarActivity extends AppCompatActivity {
+public class AddCarActivity extends AppCompatActivity implements OnSelectItem {
 
     Context context;
     Gson gson = new Gson();
@@ -38,7 +49,9 @@ public class AddCarActivity extends AppCompatActivity {
     FloatingActionButton fabSaveCar;
     AutoCompleteTextView etModel, etMark;
     ArrayList<Integer> idsParameters;
-    EditText etNameCar;
+    EditText etNameCar, etOdometr, etEatFuel, etYearCreate;
+    ImageView ivAvatar;
+    AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +60,7 @@ public class AddCarActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         CommonHelper.setStatusBarColor(this);
         context = AddCarActivity.this;
@@ -58,6 +71,10 @@ public class AddCarActivity extends AppCompatActivity {
         etModel = findViewById(R.id.etModel);
         etMark = findViewById(R.id.etMark);
         etNameCar = findViewById(R.id.etNameCar);
+        etOdometr = findViewById(R.id.etOdometr);
+        etEatFuel = findViewById(R.id.etEatFuel);
+        etYearCreate = findViewById(R.id.etYearCreate);
+        ivAvatar = findViewById(R.id.ivAvatar);
 
         etMark.setAdapter(getAdapterMark());
         etModel.setAdapter(getAdapterModel());
@@ -93,6 +110,12 @@ public class AddCarActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Cars newCar = new Cars();
                 newCar.setName(etNameCar.getText().toString());
+                newCar.setOdometr(Float.valueOf(etOdometr.getText().toString()));
+                newCar.setEatFuel(Float.valueOf(etEatFuel.getText().toString()));
+                newCar.setYearCreate(Integer.valueOf(etYearCreate.getText().toString()));
+
+                if(getIntent().getLongExtra("count", -1)==0)
+                    newCar.setMainCar(1);
 
                 Marks markCar = new MarksController(context).find(new String[]{"Name"}, new String[]{etMark.getText().toString()});
                 if(markCar.get_id()==0) {
@@ -124,6 +147,20 @@ public class AddCarActivity extends AppCompatActivity {
                 }
 
                 Toast.makeText(context, "Машина успешно добавлена", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(context, MainActivity.class));
+                finish();
+            }
+        });
+
+        ivAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<String> items = new ArrayList<String>() {{
+                    add("Выбрать из галереи");
+                    add("Сфотографировать");
+                }};
+
+                dialog = DialogsHelper.dialogWithList(context, ((AddCarActivity) context).getLayoutInflater(), "Сменить фото", items);
             }
         });
     }
@@ -145,5 +182,64 @@ public class AddCarActivity extends AppCompatActivity {
             i++;
         }
         return new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, models);
+    }
+
+    @Override
+    public void onSelect(String item) {
+        if(item==null)
+            return;
+
+        if(dialog!=null)
+            dialog.dismiss();
+
+        if(item.equals("Выбрать из галереи")) {
+            //покажем галерею
+            Intent intent = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(intent, 1);
+        }
+        else if(item.equals("Сфотографировать")) {
+            if ( Build.VERSION.SDK_INT >= 23 &&
+                    ContextCompat.checkSelfPermission( context, android.Manifest.permission.CAMERA ) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            startActivityForResult(intent, 1);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // запишем в лог значения requestCode и resultCode
+        // если пришло ОК
+        if (requestCode == 1 && resultCode == RESULT_OK
+                && null != data) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+            Cursor cursor = getContentResolver().query(selectedImage,
+                    filePathColumn, null, null, null);
+
+            if (cursor == null || cursor.getCount() < 1) {
+                return; // no cursor or no record. DO YOUR ERROR HANDLING
+            }
+
+            cursor.moveToFirst();
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+
+            if(columnIndex < 0) // no column index
+                return; // DO YOUR ERROR HANDLING
+
+            String picturePath = cursor.getString(columnIndex);
+
+            cursor.close(); // close cursor
+
+            /*photo = decodeFilePath(picturePath.toString());
+
+            List<Bitmap> bitmap = new ArrayList<Bitmap>();
+            bitmap.add(photo);
+            ImageAdapter imageAdapter = new ImageAdapter(
+                    AddIncidentScreen.this, bitmap);
+            imageAdapter.notifyDataSetChanged();
+            newTagImage.setAdapter(imageAdapter);*/
+        }
     }
 }

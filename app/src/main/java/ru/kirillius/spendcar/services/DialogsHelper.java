@@ -2,8 +2,17 @@ package ru.kirillius.spendcar.services;
 
 import android.content.Context;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
+import java.util.ArrayList;
+
+import ru.kirillius.spendcar.R;
+import ru.kirillius.spendcar.adapters.SimpleAdapter;
 import ru.kirillius.spendcar.interfaces.OnCompleteAction;
 
 
@@ -12,127 +21,8 @@ import ru.kirillius.spendcar.interfaces.OnCompleteAction;
  */
 
 public class DialogsHelper {
-    public static void DefaultNotification(Context context, LayoutInflater inflater, String title, String text, final OnCompleteAction listener) {
-        /*AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-        View viewDialog = inflater.inflate(R.layout.dialog_default, null);
-        TextView tvTitleDialog, tvText;
-        Button btnClose;
-
-        tvTitleDialog = viewDialog.findViewById(R.id.tvTitleDialog);
-        tvText = viewDialog.findViewById(R.id.tvText);
-        btnClose = viewDialog.findViewById(R.id.btnClose);
-
-        tvTitleDialog.setText(CommonHelper.FilterNullValues(title));
-        tvText.setText(CommonHelper.FilterNullValues(text));
-
-        builder.setView(viewDialog);
-        final AlertDialog dialog = builder.create();
-        btnClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(listener!=null) {
-                    listener.onComplete(true);
-                    dialog.dismiss();
-                }
-                else
-                    dialog.dismiss();
-            }
-        });
-
-        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialogInterface) {
-                if(listener!=null)
-                    listener.onComplete(true);
-            }
-        });
-
-        dialog.show();*/
-    }
-
-    public static void NotificationAboutRequiredParams(Context context, LayoutInflater inflater, String title, String text, final OnCompleteAction listener) {
-        /*AlertDialog.Builder builder = new AlertDialog.Builder(context);
-
-        View viewDialog = inflater.inflate(R.layout.dialog_about_required, null);
-        TextView tvTitleDialog, tvText;
-        Button btnClose, btnExit;
-
-        tvTitleDialog = viewDialog.findViewById(R.id.tvTitleDialog);
-        tvText = viewDialog.findViewById(R.id.tvText);
-        btnClose = viewDialog.findViewById(R.id.btnClose);
-        btnExit = viewDialog.findViewById(R.id.btnExit);
-
-        tvTitleDialog.setText(CommonHelper.FilterNullValues(title));
-        tvText.setText(CommonHelper.FilterNullValues(text));
-
-        builder.setView(viewDialog);
-        final AlertDialog dialog = builder.create();
-        btnExit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(listener!=null) {
-                    listener.onComplete(true);
-                    dialog.dismiss();
-                }
-                else
-                    dialog.dismiss();
-            }
-        });
-
-        btnClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
-
-        dialog.show();*/
-    }
-
-    public static void DefaultNotification(Context context, LayoutInflater inflater, String title, String text, String titleButton, final OnCompleteAction listener) {
-        /*AlertDialog.Builder builder = new AlertDialog.Builder(context);
-
-        View viewDialog = inflater.inflate(R.layout.dialog_default, null);
-        TextView tvTitleDialog, tvText;
-        Button btnClose;
-
-        tvTitleDialog = viewDialog.findViewById(R.id.tvTitleDialog);
-        tvText = viewDialog.findViewById(R.id.tvText);
-        btnClose = viewDialog.findViewById(R.id.btnClose);
-        if(titleButton!=null)
-            btnClose.setText(titleButton);
-
-        tvTitleDialog.setText(CommonHelper.FilterNullValues(title));
-        tvText.setText(CommonHelper.FilterNullValues(text));
-
-        builder.setView(viewDialog);
-        final AlertDialog dialog = builder.create();
-        btnClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(listener!=null) {
-                    listener.onComplete(true);
-                    dialog.dismiss();
-                }
-                else
-                    dialog.dismiss();
-            }
-        });
-
-        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialogInterface) {
-                if(listener!=null)
-                    listener.onComplete(true);
-            }
-        });
-
-        dialog.show();*/
-    }
-
-
-    public static void DefaultAlertDialog(Context context, String title, String text) {
+    public static void defaultAlertDialog(Context context, String title, String text) {
         new AlertDialog.Builder(context)
                 .setTitle(title)
                 .setMessage(text)
@@ -140,7 +30,7 @@ public class DialogsHelper {
     }
 
     public static void confirmDialog(Context context, LayoutInflater inflater, String text, final OnCompleteAction listener) {
-        /*AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
         View viewDialog = inflater.inflate(R.layout.dialog_confirm, null);
         TextView tvTextDialog;
@@ -178,6 +68,40 @@ public class DialogsHelper {
             }
         });
 
-        dialog.show();*/
+        dialog.show();
+    }
+
+    public static AlertDialog dialogWithList(Context context, LayoutInflater inflater, String title, ArrayList<String> items) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        View viewDialog = inflater.inflate(R.layout.dialog_with_list, null);
+        TextView tvTitleDialog;
+        Button btnCancel;
+        RecyclerView rvItems;
+        RecyclerView.LayoutManager mLayoutManager;
+
+        tvTitleDialog = viewDialog.findViewById(R.id.tvTitleDialog);
+        btnCancel = viewDialog.findViewById(R.id.btnCancel);
+        rvItems = viewDialog.findViewById(R.id.rvItems);
+
+        mLayoutManager = new LinearLayoutManager(context);
+        rvItems.setLayoutManager(mLayoutManager);
+        rvItems.setHasFixedSize(true);
+        rvItems.setAdapter(new SimpleAdapter(context, items));
+
+        tvTitleDialog.setText(CommonHelper.FilterNullValues(title));
+        builder.setView(viewDialog);
+
+        final AlertDialog dialog = builder.create();
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+
+        return dialog;
     }
 }

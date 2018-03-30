@@ -70,7 +70,13 @@ public class CarsController {
 
     }
 
-    public void delete() {
+    public void delete(Integer _id) {
+        if(_id==null) {
+            bfDB.deleteAll("cars");
+        }
+    }
 
+    public long getCount() {
+        return bfDB.getCount("cars");
     }
 }

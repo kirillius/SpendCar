@@ -17,7 +17,7 @@ import ru.kirillius.spendcar.database.models.ParametersCar;
 public class DBHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "spendCarDB.db";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
     private Context context;
 
     public DBHelper(Context context) {
