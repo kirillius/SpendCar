@@ -2,14 +2,13 @@ package ru.kirillius.spendcar.activites;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -198,10 +197,10 @@ public class AddCarActivity extends AppCompatActivity implements OnSelectItem {
             startActivityForResult(intent, 1);
         }
         else if(item.equals("Сфотографировать")) {
-            if ( Build.VERSION.SDK_INT >= 23 &&
+            /*if ( Build.VERSION.SDK_INT >= 23 &&
                     ContextCompat.checkSelfPermission( context, android.Manifest.permission.CAMERA ) != PackageManager.PERMISSION_GRANTED) {
                 return;
-            }
+            }*/
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             startActivityForResult(intent, 1);
         }
@@ -231,8 +230,14 @@ public class AddCarActivity extends AppCompatActivity implements OnSelectItem {
             String picturePath = cursor.getString(columnIndex);
 
             cursor.close(); // close cursor
+            Bitmap bitmap = BitmapFactory.decodeFile(picturePath);
+            if(bitmap==null)
+                return;
 
-            /*photo = decodeFilePath(picturePath.toString());
+            bitmap = Bitmap.createScaledBitmap(bitmap,  ivAvatar.getWidth() ,ivAvatar.getHeight(), true);
+            ivAvatar.setImageBitmap(bitmap);
+
+            /*Bitmap photo = decodeFilePath(picturePath.toString());
 
             List<Bitmap> bitmap = new ArrayList<Bitmap>();
             bitmap.add(photo);
