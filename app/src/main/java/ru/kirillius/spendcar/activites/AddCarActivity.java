@@ -51,6 +51,8 @@ public class AddCarActivity extends AppCompatActivity implements OnSelectItem {
     EditText etNameCar, etOdometr, etEatFuel, etYearCreate;
     ImageView ivAvatar;
     AlertDialog dialog;
+    private static final int CAMERA_REQUEST = 1;
+    private static final int GALLERY_REQUEST = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,7 +196,7 @@ public class AddCarActivity extends AppCompatActivity implements OnSelectItem {
         if(item.equals("Выбрать из галереи")) {
             //покажем галерею
             Intent intent = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            startActivityForResult(intent, 1);
+            startActivityForResult(intent, GALLERY_REQUEST);
         }
         else if(item.equals("Сфотографировать")) {
             /*if ( Build.VERSION.SDK_INT >= 23 &&
@@ -202,7 +204,7 @@ public class AddCarActivity extends AppCompatActivity implements OnSelectItem {
                 return;
             }*/
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            startActivityForResult(intent, 1);
+            startActivityForResult(intent, CAMERA_REQUEST);
         }
     }
 
@@ -210,8 +212,7 @@ public class AddCarActivity extends AppCompatActivity implements OnSelectItem {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // запишем в лог значения requestCode и resultCode
         // если пришло ОК
-        if (requestCode == 1 && resultCode == RESULT_OK
-                && null != data) {
+        if (requestCode == GALLERY_REQUEST && resultCode == RESULT_OK && null != data) {
             Uri selectedImage = data.getData();
             String[] filePathColumn = { MediaStore.Images.Media.DATA };
             Cursor cursor = getContentResolver().query(selectedImage,
@@ -236,15 +237,17 @@ public class AddCarActivity extends AppCompatActivity implements OnSelectItem {
 
             bitmap = Bitmap.createScaledBitmap(bitmap,  ivAvatar.getWidth() ,ivAvatar.getHeight(), true);
             ivAvatar.setImageBitmap(bitmap);
+        }
+        else if(requestCode == CAMERA_REQUEST && resultCode == RESULT_OK && null != data) {
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            if(photo==null)
+                return;
 
-            /*Bitmap photo = decodeFilePath(picturePath.toString());
+            photo = Bitmap.createScaledBitmap(photo,  ivAvatar.getWidth() ,ivAvatar.getHeight(), true);
+            ivAvatar.setImageBitmap(photo);
 
-            List<Bitmap> bitmap = new ArrayList<Bitmap>();
-            bitmap.add(photo);
-            ImageAdapter imageAdapter = new ImageAdapter(
-                    AddIncidentScreen.this, bitmap);
-            imageAdapter.notifyDataSetChanged();
-            newTagImage.setAdapter(imageAdapter);*/
+            Uri tempUri = CommonHelper.getImageUri(getApplicationContext(), photo);
+            System.out.println("Path_photo: "+CommonHelper.getRealPathFromURI(this, tempUri));
         }
     }
 }
